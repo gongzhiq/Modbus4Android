@@ -79,7 +79,7 @@ public class CustomWriteRegistersRequest extends ModbusRequest {
         short[] sdata = convertToShorts(data);
         for (int i = 0; i < sdata.length; i++)
             processImage.writeHoldingRegister(startOffset + i, sdata[i]);
-        return new WriteRegistersResponse(slaveId, startOffset, sdata.length);
+        return new CustomWriteRegistersResponse(slaveId, startOffset, sdata.length);
     }
 
     /** {@inheritDoc} */
@@ -90,7 +90,7 @@ public class CustomWriteRegistersRequest extends ModbusRequest {
 
     @Override
     ModbusResponse getResponseInstance(int slaveId) throws ModbusTransportException {
-        return new WriteRegistersResponse(slaveId);
+        return new CustomWriteRegistersResponse(slaveId);
     }
 
     /** {@inheritDoc} */
