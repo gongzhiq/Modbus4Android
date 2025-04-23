@@ -820,7 +820,7 @@ public class ModbusWorker implements IModbusWorker {
         final int slaveId, final int start, final int[] values,
         final ModbusCallback<CustomWriteRegistersResponse> callback
     ) {
-        new AsyncCallableTask<>(callableWriteRegisters(slaveId, start, values), callback).execute();
+        new AsyncCallableTask<>(callableCustomWriteRegisters(slaveId, start, values), callback).execute();
     }
     
     //</editor-fold>
