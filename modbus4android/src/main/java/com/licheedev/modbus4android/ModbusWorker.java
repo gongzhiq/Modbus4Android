@@ -24,6 +24,8 @@ import com.serotonin.modbus4j.msg.WriteRegisterRequest;
 import com.serotonin.modbus4j.msg.WriteRegisterResponse;
 import com.serotonin.modbus4j.msg.WriteRegistersRequest;
 import com.serotonin.modbus4j.msg.WriteRegistersResponse;
+import com.serotonin.modbus4j.msg.CustomWriteRegistersRequest;
+import com.serotonin.modbus4j.msg.CustomWriteRegistersResponse;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -747,6 +749,34 @@ public class ModbusWorker implements IModbusWorker {
         };
     }
 
+     //</editor-fold>
+
+    //<editor-fold desc="16（0x10）写多个寄存器">
+
+    @NonNull
+    public Callable<CustomWriteRegistersResponse> callableCustomWriteRegisters(
+        final int slaveId,
+        final int start, final int[] values
+    ) {
+        return new Callable<CustomWriteRegistersResponse>() {
+            @Override
+            public CustomWriteRegistersResponse call() throws Exception {
+
+                checkWorkingState();
+
+                CustomWriteRegistersRequest request = new CustomWriteRegistersRequest(slaveId, start, values);
+                CustomWriteRegistersResponse response =
+                    (CustomWriteRegistersResponse) mModbusMaster.send(request);
+
+                if (response.isException()) {
+                    throw new ModbusRespException(response);
+                }
+
+                return response;
+            }
+        };
+    }
+
     /**
      * 16 (0x10) 写多个寄存器, 同步，需在子线程运行
      *
@@ -778,6 +808,21 @@ public class ModbusWorker implements IModbusWorker {
     ) {
         new AsyncCallableTask<>(callableWriteRegisters(slaveId, start, values), callback).execute();
     }
+
+    /**
+     * 16 (0x10) 写多个寄存器
+     *
+     * @param slaveId 从设备ID
+     * @param start 开始寄存器地址
+     * @param values 寄存器值
+     */
+    public void customWriteRegisters(
+        final int slaveId, final int start, final int[] values,
+        final ModbusCallback<CustomWriteRegistersResponse> callback
+    ) {
+        new AsyncCallableTask<>(callableWriteRegisters(slaveId, start, values), callback).execute();
+    }
+    
     //</editor-fold>
 
     //<editor-fold desc="16（0x10）写多个寄存器，但只写1个">
